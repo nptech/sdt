@@ -1,0 +1,139 @@
+<!DOCTYPE html><html lang="ru"><head>
+<meta charset="UTF-8">
+<title>НПТ таймер</title>
+<style>
+body{
+  text-align: center;
+  background: #00ECB9;
+  font-family: sans-serif;
+  font-weight: 100;
+}
+
+h1{
+  color: #396;
+  font-weight: 100;
+  font-size: 40px;
+  margin: 40px 0px 20px;
+}
+
+#clockdiv{
+	font-family: sans-serif;
+	color: #fff;
+	display: none;
+	font-weight: 100;
+	text-align: center;
+	font-size: 30px;
+}
+
+#clockdiv > div{
+	padding: 10px;
+	border-radius: 3px;
+	background: #00BF96;
+	display: inline-block;
+}
+
+#clockdiv div > span{
+	padding: 15px;
+	border-radius: 3px;
+	background: #00816A;
+	display: inline-block;
+}
+
+.smalltext{
+	padding-top: 5px;
+	font-size: 16px;
+}
+</style>
+</head>
+
+<body>
+
+<h1 id="title">Хорошего отдыха!</h1>
+<div id="clockdiv">
+  <div>
+    <span class="minutes"></span>
+    <div class="smalltext">Минут</div>
+  </div>
+  <div>
+    <span class="seconds"></span>
+    <div class="smalltext">Секунд</div>
+  </div>
+</div>
+<script>
+function getTimeRemaining(endtime) {
+  var t = endtime - Date.parse(new Date());
+  var seconds = Math.floor((t / 1000) % 60);
+  var minutes = Math.floor((t / 1000 / 60) % 60);
+  return {
+    'total': t,
+    'minutes': minutes,
+    'seconds': seconds
+  };
+}
+
+function initializeClock(id, endtime) {
+  var clock = document.getElementById(id);
+  clock.style.display = 'block';
+  var minutesSpan = clock.querySelector('.minutes');
+  var secondsSpan = clock.querySelector('.seconds');
+
+  function updateClock() {
+    var t = getTimeRemaining(endtime);
+
+    minutesSpan.innerHTML = ('0' + t.minutes).slice(-2);
+    secondsSpan.innerHTML = ('0' + t.seconds).slice(-2);
+
+    if (t.total <= 0) {
+      clearInterval(timeinterval);
+      document.location.reload(true);
+    }
+  }
+
+  updateClock();
+  var timeinterval = setInterval(updateClock, 1000);
+}
+
+var schedule = [
+  [[7,1], [8,0]],
+  [[8,0], [8,30]],
+  [[8,30], [8,35]],
+  [[8,35], [9,5]],
+  [[9,5], [9,10]],
+  [[9,10], [9,40]],
+  [[9,40], [9,45]],
+  [[9,45], [10,15]],
+  [[10,15], [10,20]],
+  [[10,20], [10,50]],
+  [[10,50], [10,55]],
+  [[10,55], [11,25]],
+  [[11,25], [11,30]],
+  [[11,30], [12,0]],
+  [[12,0], [12,5]],
+  [[12,5], [12,35]],
+  [[12,35], [12,40]],
+  [[12,40], [13,10]],
+  [[13,10], [13,15]],
+  [[13,15], [13,45]],
+  [[13,45], [13,50]],
+  [[13,50], [14,20]],
+  [[14,20], [14,25]],
+  [[14,25], [14,55]]
+];
+
+var today = new Date();
+
+for(var i = 0, lesson = false; i < schedule.length; i++, lesson = !lesson){
+  var startMs = today.setHours(schedule[i][0][0],schedule[i][0][1],0,0);
+  var endMs = today.setHours(schedule[i][1][0],schedule[i][1][1],0,0);
+  var currentMs = Date.parse(new Date());
+  if(today.getDay() !== 0 && endMs > currentMs  && currentMs >= startMs){
+    if (lesson) {
+      document.getElementById("title").textContent = "До конца урока";
+    }
+    else {
+      document.getElementById("title").textContent = "До начала урока";
+    }
+      initializeClock('clockdiv', endMs);
+  }
+}
+</script></body></html>
